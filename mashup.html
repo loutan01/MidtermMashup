@@ -1,8 +1,48 @@
+!<!DOCTYPE html>
+
 <html>
   <head>
     <title> Weather Mashup</title>
     <h1>Weather mashup</h1>
-    <script src = "weather.js" type = "text/javascript"></script>
+    <script type = "text/javascript">
+      weatherOfInput = function(area) {
+        console.log(area)
+      }
+
+      wealtherFromWolfram = function(region, city){
+        obj2.open("GET", "http://api.wolframalpha.com/v2/query?input=weather+"+region+city+"&appid=XXXXX&includepodid=InstantaneousWeather:WeatherData")
+        obj2.send
+      }
+
+      weatherByLocation = function(){
+        var obj, aVar, splitter, splitter2, region, city
+        obj = new XMLHttpRequest()
+        obj.onreadystatechange = function(){
+
+          if(obj.readyState == 4 && obj.status == 200){
+            aVar = obj.responseXML
+            console.log(aVar)
+            splitter = aVar.getElementsByTagName("regionName")
+            region = splitter[0].childNodes[0].data
+            splitter2 = aVar.getElementsByTagName("city")
+            city = splitter2[0].childNodes[0].data
+            console.log(region)
+            console.log(city)
+          }
+
+        };
+        obj.open("GET", "http://ip-api.com/xml/?fields=regionName,city", true);
+        obj.send();
+
+        var obj2 = new XMLHttpRequest()
+
+        obj2.open("GET", "http://api.wolframalpha.com/v2/query?appid=XXXX&input=weather%20Rochester%20Minnesota&format=plaintext", true);
+        obj2.send();//send call to flask
+        //console.log(obj2)
+        //weatherFromWolfram(region, city)
+
+      }
+    </script>
   </head>
   <body>
 
