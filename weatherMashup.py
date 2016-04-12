@@ -20,7 +20,7 @@ def root():
 def getWeather(city, region):
     query = "weather" + "%20" +city + "%20" + region
     def request(query):
-        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=XXXX&input="+query+"&includepodid=InstantaneousWeather:WeatherData"
+        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=XXXX&input="+query+"&includepodid=InstantaneousWeather:WeatherData" #app id removed
         resp, content = httplib2.Http().request(wolfram_api)
         return content
 
