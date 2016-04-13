@@ -14,13 +14,16 @@ app.debug = True
 
 @app.route('/')
 def root():
-    return app.send_static_file('mashup.html')
+    return app.send_static_file('weatherMashup.html')
 
 @app.route('/getWeather/<string:city>/<string:region>', methods = ['GET', 'POST'])
+
 def getWeather(city, region):
-    query = "weather" + "%20" +city + "%20" + region
+    concatenatedString = "weather " + city + " " + region
+    query = concatenatedString.replace(" ", "%20")
+    print(query)
     def request(query):
-        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=XXXX&input="+query+"&includepodid=InstantaneousWeather:WeatherData" #app id removed
+        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=2T8PY5-W4E4P7JQQ4&input="+query+"&includepodid=InstantaneousWeather:WeatherData"
         resp, content = httplib2.Http().request(wolfram_api)
         return content
 
@@ -40,22 +43,12 @@ def getWeather(city, region):
         elif error:
             return "error"
 
+    return response(query)
 
-
-    weather = response(query)
-
-    print(weather)
-    print(type(weather))
-
-    return jsonify(weather)
-
-
-    #res = wolframAlpha.query('Weather' + city + region)
-    #print(res.content())
-    #return Response(res.Content, mimetype = 'text/xml')
 def getImage(city, region):
     pass
 
 
 if __name__ == '__main__':
     app.run()
+
