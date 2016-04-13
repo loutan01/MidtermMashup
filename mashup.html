@@ -6,7 +6,6 @@
     <h1>Weather mashup</h1>
     <script type = "text/javascript">
 
-
       weatherFromWolfram = function(region, city){
         var obj2, weather, printWeather
         obj2 = new XMLHttpRequest()
@@ -14,16 +13,44 @@
         console.log(obj2)
         obj2.onreadystatechange = function(){
             if(obj2.readyState == 4 && obj2.status == 200){
-
               weather = document.createTextNode(obj2.responseText);
               node = document.getElementById("fromWolframQuery");
               replacedNode = document.getElementById("fromWolframQuery").childNodes[0];
               node.replaceChild(weather, replacedNode);
             }
-        }
+        };
 
         obj2.send()
       }
+
+      weatherOfInput = function(){
+        stringOfArea = document.getElementById("area").value;
+        area = stringOfArea.split(", ");
+        city = area.shift()
+        region= area.toString()
+        console.log(city)
+        console.log(region)
+
+        weatherFromWolfram(region, city)
+        imageOfLocation(region, city)
+
+      }
+
+      imageOfLocation = function(region, city){
+        var obj3, concatenatedString
+        concatenatedString = region + " "+ city
+        query = concatenatedString.replace(" ", "%20")
+        obj3 = new XMLHttpRequest()
+          obj3.onreadystatechange = function(){
+            if(obj3.readyState == 4 && obj3.status == 200){
+              aVar = obj3.responseXML
+              console.log(aVar)
+            }
+        };
+        obj3.open("GET", "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=2c46f53c703836fa0ac61bf0ca7a19c2&text=" + query + "&format=rest", true)
+        obj3.send()
+      }
+
       weatherByLocation = function(){
         var obj, aVar, splitter, splitter2, region, city
         obj = new XMLHttpRequest()
@@ -39,29 +66,22 @@
             console.log(region)
             console.log(city)
             weatherFromWolfram(region, city)
+            imageOfLocation(region, city)
           }
 
         };
+
         obj.open("GET", "http://ip-api.com/xml/?fields=regionName,city", true);
         obj.send();
-
-        console.log(region)
-
-
-
-
-        //send call to flask
-        //console.log(obj2)
-        //weatherFromWolfram(region, city)
-
       }
+
     </script>
   </head>
   <body>
 
   <div id = "infoIn">
 
-    <input id = "area" type = "text" placeholder = "Enter City and State" size = "50">
+    <input id = "area" type = "text" placeholder = "Enter City and Region separated by a comma" size = "50">
 
     <button onclick = "weatherOfInput()">Get weather now!</button>
 
@@ -76,4 +96,3 @@
   </body>
 
 </html>
-
