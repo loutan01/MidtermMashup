@@ -6,12 +6,47 @@
     <h1>Weather mashup</h1>
 
     <script>
+      weatherByLocation = function(){
+        var obj, aVar, splitter, splitter2, region, city
+        obj = new XMLHttpRequest()
+        obj.onreadystatechange = function(){
+
+          if(obj.readyState == 4 && obj.status == 200){
+            aVar = obj.responseXML
+            splitter = aVar.getElementsByTagName("regionName")
+            region = splitter[0].childNodes[0].data
+            splitter2 = aVar.getElementsByTagName("city")
+            city = splitter2[0].childNodes[0].data
+            console.log(city)
+            console.log(region)
+
+            weatherFromWolfram(region, city)
+            imageOfLocation(region, city)
+          }
+        };
+
+        obj.open("GET", "http://ip-api.com/xml/?fields=regionName,city", true);
+        obj.send();
+      }
+      
+      weatherOfInput = function(){
+        var stringOfArea, area, city, region
+        stringOfArea = document.getElementById("area").value;
+        area = stringOfArea.split(", ");
+        city = area.shift()
+        region= area.toString()
+        console.log(city)
+        console.log(region)
+        
+
+        weatherFromWolfram(region, city)
+        imageOfLocation(region, city)
+      }
 
       weatherFromWolfram = function(region, city){
-        var obj2, weather, printWeather
+        var obj2, weather, node, replacedNode
         obj2 = new XMLHttpRequest()
         obj2.open("GET", "/getWeather/"+city+"/"+region, true);
-        //console.log(obj2)
         obj2.onreadystatechange = function(){
             if(obj2.readyState == 4 && obj2.status == 200){
               weather = document.createTextNode(obj2.responseText);
@@ -24,30 +59,17 @@
         obj2.send()
       }
 
-      weatherOfInput = function(){
-        stringOfArea = document.getElementById("area").value;
-        area = stringOfArea.split(", ");
-        city = area.shift()
-        region= area.toString()
-        console.log(city)
-        console.log(region)
-
-        weatherFromWolfram(region, city)
-        imageOfLocation(region, city)
-
-      }
-
       imageOfLocation = function(region, city){
-        var obj3, query, aVar, images
+        var obj3, query, aVar, img, replacedChild, node, newChild
         query = "\"" + city +" "+ region + "\""
         obj3 = new XMLHttpRequest()
            obj3.onreadystatechange = function(){
              if(obj3.readyState == 4 && obj3.status == 200){
               aVar = obj3.responseXML
-              var img = document.createElement("img")
+              img = document.createElement("img")
               img.src = aVar.getElementsByTagName("photo")[0].getAttribute("url_o")
-              var replacedChild = document.getElementById("locationFromFlickr").childNodes[0];
-              var node = document.getElementById("locationFromFlickr")
+              replacedChild = document.getElementById("locationFromFlickr").childNodes[0];
+              node = document.getElementById("locationFromFlickr")
               newChild = node.appendChild(img)
               node.replaceChild(newChild, replacedChild)
             }
@@ -57,33 +79,6 @@
 
 
       }
-
-      weatherByLocation = function(){
-        var obj, aVar, splitter, splitter2, region, city
-        obj = new XMLHttpRequest()
-        obj.onreadystatechange = function(){
-
-          if(obj.readyState == 4 && obj.status == 200){
-            aVar = obj.responseXML
-            //console.log(aVar)
-            splitter = aVar.getElementsByTagName("regionName")
-            console.log(splitter)
-            region = splitter[0].childNodes[0].data
-            splitter2 = aVar.getElementsByTagName("city")
-            city = splitter2[0].childNodes[0].data
-
-            console.log(region)
-            console.log(city)
-            weatherFromWolfram(region, city)
-            imageOfLocation(region, city)
-          }
-
-        };
-
-        obj.open("GET", "http://ip-api.com/xml/?fields=regionName,city", true);
-        obj.send();
-      }
-
     </script>
   </head>
   <body>
