@@ -44,17 +44,15 @@
            obj3.onreadystatechange = function(){
              if(obj3.readyState == 4 && obj3.status == 200){
               aVar = obj3.responseXML
-              stealsTheURLOfYourFirstChild = aVar.getElementsByTagName("photo")[0].getAttribute("url_o")
-              console.log(stealsTheURLOfYourFirstChild)
               var img = document.createElement("img")
-              img.src = stealsTheURLOfYourFirstChild
+              img.src = aVar.getElementsByTagName("photo")[0].getAttribute("url_o")
               var replacedChild = document.getElementById("locationFromFlickr").childNodes[0];
               var node = document.getElementById("locationFromFlickr")
               newChild = node.appendChild(img)
               node.replaceChild(newChild, replacedChild)
             }
         }
-        obj3.open("GET", "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=2c46f53c703836fa0ac61bf0ca7a19c2&text=" + query + "&format=rest&extras=url_o", true)
+        obj3.open("GET", "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=KEY GOES HERE&text=" + query + "&format=rest&extras=url_o", true)
         obj3.send()
 
 
