@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+
+    <title> Weather Mashup</title>
+    <h1>Weather Mashup</h1>
+    <style>
+      h1  {
+        font-weight: "Arial Black";
+        text-align: center;
+      }
+      body {
+        background-image: url(https://upload.wikimedia.org/wikipedia/commons/1/16/Appearance_of_sky_for_weather_forecast,_Dhaka,_Bangladesh.JPG);
+      }
+
+      #footer {
+        position: fixed;
+        margin-top: auto;
+        text-align: center;
+        bottom: 0px;
+        width: 100%;
+        height: 60px;
+        background-color: #ffffff;
+	    /*margin-top: px; /* prevents infinite scroll if #footer have a border of 2px*/
+	      /*position: absolute;
+	      top: expression(documentElement.scrollTop+(documentElement.clientHeight-this.clientHeight));*/
+      }
+
+      #infoIn{
+        text-align: center;
+        border: 4px solid red;
+        background-color: #5E29AB;
+        height: 50px;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+      #wolframAlphaOutput{
+        border: 4px solid red;
+        text-align: center;
+        font-weight: bold;
+        color: #ffffff;
+	      background-color: #000066;
+	      margin-left: 5px;
+    	  margin-right: 5px;
+      }
+      #locationFromFlickr{
+        margin-top: auto;
+        text-align:center;
+      }
+
+    </style>
+    <script>
+
+      weatherFromWolfram = function(region, place){
+        var obj2, weather, printWeather
+        obj2 = new XMLHttpRequest()
+        obj2.open("GET", "/getWeather/"+place+"/"+region, true);
+        //console.log(obj2)
+        obj2.onreadystatechange = function(){
+            if(obj2.readyState == 4 && obj2.status == 200){
+              weather = document.createTextNode(obj2.responseText);
+              node = document.getElementById("fromWolframQuery");
+              replacedNode = document.getElementById("fromWolframQuery").childNodes[0];
+              node.replaceChild(weather, replacedNode);
+            }
+        };
+
+        obj2.send()
+      }
+
+      weatherOfInput = function(){
+        stringOfArea = document.getElementById("area").value;
+        area = stringOfArea.split(", ");
+        place = area.shift()
+        region= area.toString()
+        console.log(place)
+        console.log(region)
+
+        weatherFromWolfram(region, place)
+        imageOfLocation(region, place)
+
+      }
+
+      imageOfLocation = function(region, place){
+        var obj3, query, aVar, images, i
+         query = "\"" + place +" "+ region + "\""
+        console.log(query)
+        obj3 = new XMLHttpRequest()
+           obj3.onreadystatechange = function(){
+
+             if(obj3.readyState == 4 && obj3.status == 200){
+              aVar = obj3.responseXML
+              console.log(aVar)
+              try{
+                i = Math.floor(Math.random()*100)
+                console.log(i)
+                stealsTheURLOfYourFirstChild = aVar.getElementsByTagName("photo")[i].getAttribute("url_c")
+                while (stealsTheURLOfYourFirstChild == null){
+                  i = Math.floor(Math.random()* 100)
+                  stealsTheURLOfYourFirstChild = aVar.getElementsByTagName("photo")[i].getAttribute("url_c")
+                  console.log("loop fired for ", stealsTheURLOfYourFirstChild)
+                }
+              }catch(TypeError){
+                console.log("Attempted to get attribute of photo element that does not exist")
+                i = Math.floor(Math.random()* 10)
+                stealsTheURLOfYourFirstChild = aVar.getElementsByTagName("photo")[i].getAttribute("url_c")
+                while (stealsTheURLOfYourFirstChild == null){
+                  i = Math.floor(Math.random()* 10)
+                  stealsTheURLOfYourFirstChild = aVar.getElementsByTagName("photo")[i].getAttribute("url_c")
+                  console.log("loop fired for ", stealsTheURLOfYourFirstChild)
+                }
+              }
+
+
+              console.log(stealsTheURLOfYourFirstChild)
+              var img = document.createElement("img")
+              img.id = "flickrOutput"
+              console.log(img.innterHTML)
+              img.src = stealsTheURLOfYourFirstChild
+              console.log(img.src)
+              var replacedChild = document.getElementById("locationFromFlickr").childNodes[0];
+              var node = document.getElementById("locationFromFlickr")
+              newChild = node.appendChild(img)
+              node.replaceChild(newChild, replacedChild)
+            }
+        }
+        obj3.open("GET", "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=THIS IS WHERE THE KEY GOES!&text=" + query + "&format=rest&extras=url_c", true)
+        obj3.send()
+
+
+      }
+
+      weatherByLocation = function(){
+        var obj, aVar, splitter, splitter2, region, place
+        obj = new XMLHttpRequest()
+        obj.onreadystatechange = function(){
+
+          if(obj.readyState == 4 && obj.status == 200){
+            aVar = obj.responseXML
+            //console.log(aVar)
+            splitter = aVar.getElementsByTagName("regionName")
+            console.log(splitter)
+            region = splitter[0].childNodes[0].data
+            splitter2 = aVar.getElementsByTagName("city")
+            place = splitter2[0].childNodes[0].data
+
+            console.log(region)
+            console.log(place)
+            weatherFromWolfram(region, place)
+            imageOfLocation(region, place)
+          }
+
+        };
+
+        obj.open("GET", "http://ip-api.com/xml/?fields=regionName,city", true);
+        obj.send();
+      }
+
+    </script>
+  </head>
+  <body>
+
+  <div id = "infoIn">
+
+    <input id = "area" type = "text" placeholder = "Enter Place and Region separated by a comma" size = "50">
+
+    <button id = "weatherOfInput" onclick = "weatherOfInput()">Get weather now!</button>
+
+    <button id = "weatherOfLocation" onclick = "weatherByLocation()">Get weather for my Location</button>
+  </div>
+  <div id = "wolframAlphaOutput">
+    <p id = "fromWolframQuery">The weather goes here!</p>
+  </div>
+  <div id = "locationFromFlickr">
+  </div>
+  <div id = "footer">
+      <p id="credits">Mashup written by Andrew Loutfi, Ihab Saud, Philani Mkhwanazi. APIs used: <a href="https://www.wolframalpha.com/">Wolfram Alpha</a> <a href="https://www.flickr.com/">Flickr</a> <a href="http://ip-api.com/">IP-API.com</a> © 2016</p>
+  </div>
+  </body>
+
+</html>
