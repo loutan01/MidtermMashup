@@ -23,7 +23,7 @@ def getWeather(city, region):
     query = concatenatedString.replace(" ", "%20")
     print(query)
     def request(query):
-        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=ID HERE&input="+query+"&includepodid=InstantaneousWeather:WeatherData"
+        wolfram_api = "http://api.wolframalpha.com/v2/query?appid=2T8PY5-W4E4P7JQQ4&input="+query+"&includepodid=InstantaneousWeather:WeatherData"
         resp, content = httplib2.Http().request(wolfram_api)
         return content
 
@@ -41,14 +41,10 @@ def getWeather(city, region):
                     answer = answer + plaintext.text
             return answer
         elif error:
-            return "error"
+            return "Server is busy. Please try again."
 
     return response(query)
-
-def getImage(city, region):
-    pass
 
 
 if __name__ == '__main__':
     app.run()
-
